@@ -8,6 +8,7 @@ generate = (ast) ->
   tpl.mixins = {} # mixin name => mixin code
 
   generators.Block.call tpl, ast
+  tpl.pushln 'end'
 
   render: tpl.lua.join ''
   mixins: tpl.mixins
