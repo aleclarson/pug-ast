@@ -245,6 +245,27 @@ generators =
   Doctype: (node) ->
     throw Error "`doctype` is not supported yet"
 
+class PugBlock
+  constructor: ->
+    @tab = ''
+    return
+
+  push: (code) ->
+    @lua.push code
+    return
+
+  pushln: (code) ->
+    @lua.push @tab + code + '\n'
+    return
+
+  indent: ->
+    @tab += '  '
+    return
+
+  dedent: ->
+    @tab = @tab.slice 0, -2
+    return
+
 #
 # Helpers
 #
@@ -273,27 +294,6 @@ has_dynamic_attrs = (node) ->
   for attr in node.attrs
     return true if !stringRE.test attr.val
   return false
-
-class PugBlock
-  constructor: ->
-    @tab = ''
-    return
-
-  push: (code) ->
-    @lua.push code
-    return
-
-  pushln: (code) ->
-    @lua.push @tab + code + '\n'
-    return
-
-  indent: ->
-    @tab += '  '
-    return
-
-  dedent: ->
-    @tab = @tab.slice 0, -.2
-    return
 
 # -- TODO: Dont create a new scope unless new variables are declared
 # -- TODO: Try to inline code blocks safely
