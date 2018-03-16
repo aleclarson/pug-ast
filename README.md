@@ -53,10 +53,13 @@ The `_R` variable is the template result builder.
 #### Quirks
 
 - CSS strings are *not* escaped
-- Conditionals abort on nil and false
+- Conditionals abort on `nil` and `false`
 - Mixins cannot be used before their declaration
 - Mixins only have access to their scope and any globals
 - Mixins are always globally accessible, so nesting has no effect
+
+You must wrap attribute expressions (eg: `'foo' .. 1`) with parentheses,
+unless the attribute value is simply a string or variable reference.
 
 #### Variable scoping
 
@@ -66,7 +69,7 @@ The `_R` variable is the template result builder.
 
 #### `for..in`
 
-- You cannot do `for a, b, c in iterator`
+- You *cannot* do `for a, b, c in iterator`
 - `pairs` and `ipairs` are nil-tolerant
 - `pairs` is the default iterator
 - Custom iterators are supported
@@ -77,5 +80,3 @@ The `_R` variable is the template result builder.
 - `block/append/prepend`
 - `doctype`
 - `...` rest arguments for mixins
-- `//` buffered comments
-- `--[[` multi-line comments in code blocks
