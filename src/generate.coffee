@@ -48,8 +48,9 @@ generators =
       @push @tab + '_R:push("<' + node.name
       @push '")\n' if dynamic
     else
+      @pushln "local __tag = tostring(#{node.expr})"
       @pushln '_R:push("<")'
-      @pushln "_R:push(#{node.expr})"
+      @pushln '_R:push(__tag)'
 
     if node.attrs[0] or node.attributeBlocks[0]
       blocks.Attributes.call this, node, dynamic
@@ -82,7 +83,7 @@ generators =
       @push '</' + node.name + '>")\n'
     else
       @push '</")\n'
-      @pushln "_R:push(tostring(#{node.expr}))"
+      @pushln '_R:push(__tag)'
       @pushln '_R:push(">")'
     return
 
