@@ -4,7 +4,7 @@ escape_html = require 'escape-html'
 # Returns a JSON string shaped like {render, mixins}
 generate = (ast) ->
   tpl = new PugBlock
-  tpl.lua = ['function(_R, _E, _G)\n']
+  tpl.lua = ['return function(_R, _E, _G)\n']
   tpl.mixins = {} # mixin name => mixin code
 
   generators.Block.call tpl, ast
@@ -210,7 +210,7 @@ generators =
       mixin = new PugBlock
       mixin.mixins = @mixins
       mixin.lua = [
-        'function(attributes'
+        'return function(attributes'
         if node.args then ', ' + node.args
         ')\n'
       ]
