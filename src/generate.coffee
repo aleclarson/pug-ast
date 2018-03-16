@@ -22,11 +22,13 @@ dquoteRE = /"/g
 
 generators =
 
-  Block: ({ nodes }) ->
+  Block: ({ nodes }, has_scope) ->
     if nodes.length
       @indent()
+      @pushln '_R:push_env()\n' if has_scope
       for node in nodes
         generators[node.type].call this, node
+      @push '\n' + @tab + '_R:pop_env()\n' if has_scope
       @dedent()
       return
 
