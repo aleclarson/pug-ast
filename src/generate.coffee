@@ -64,18 +64,22 @@ generators =
 
     {block} = node
     if block.nodes[0]
-      @push '>")\n'
+      dynamic = find_child(block.nodes, has_non_text)?
 
-      # Push a new scope if a child has code.
-      has_scope = find_child(block.nodes, has_code)?
+      if dynamic
+        @push '>")\n'
 
-      @pushln 'do'
-      @pushln '  _R:push_env()' if has_scope
-      generators.Block.call this, block
-      @pushln '  _R:pop_env()' if has_scope
-      @pushln 'end'
+        # Push a new scope if a child has code.
+        has_scope = find_child(block.nodes, has_code)?
 
-      @push @tab + '_R:push("'
+        @pushln 'do'
+        generators.Block.call this, block, has_scope
+        @pushln 'end'
+
+        @push @tab + '_R:push("'
+
+      # Every child is a text node. Merge them into one string.
+      else @push '>' + block.nodes.map(pluck_val).map(repr).join ''
 
     else @push '>'
 
@@ -248,6 +252,9 @@ repr = (str) ->
 
 has_code = (node) ->
   node.type is "Code"
+
+has_non_text = (node) ->
+  node.type isnt 'Text'
 
 find_child = (nodes, test) ->
   for node in nodes
