@@ -53,7 +53,7 @@ generators =
       @pushln '_R:push(__tag)'
 
     if node.attrs[0] or node.attributeBlocks[0]
-      blocks.Attributes.call this, node, dynamic
+      generators.Attributes.call this, node, dynamic
 
     if dynamic or node.expr
       @push @tab + '_R:push("'
