@@ -223,7 +223,11 @@ generators =
         if node.args then ', ' + node.args
         ')\n'
       ]
-      generators.Block.call mixin, node.block
+
+      # Push a new scope if a child has code.
+      has_scope = find_child(node.block.nodes, has_code)?
+
+      generators.Block.call mixin, node.block, has_scope
       mixin.push 'end'
 
       @mixins[node.name] = mixin.lua.join ''
