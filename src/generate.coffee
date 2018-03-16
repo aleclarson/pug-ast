@@ -22,6 +22,7 @@ module.exports = generate
 noEscapeRE = /^(?:class|style)$/
 newlineRE = /\n/g
 dquoteRE = /"/g
+boolRE = /^(?:true|false)$/
 
 generators =
 
@@ -94,46 +95,57 @@ generators =
       @pushln '_R:push(">")'
     return
 
+  # This isn't a *real* AST node type.
   Attributes: (node, dynamic) ->
 
-    if dynamic
-      @pushln '_R:attrs({'
-      @indent()
+    if node.attrs[0]
+      attrs = {}
 
+      # Merge 'class' attributes into an array.
       for attr in node.attrs
-        {name, val} = attr
-        name = name.toLowerCase()
-        if attr.mustEscape and not noEscapeRE.test name
-          val = "escape(#{val})"
-        @pushln "['#{name}'] = #{val},"
+        name = attr.name.toLowerCase()
+        if name is 'class'
+          if attrs.class
+          then attrs.class.push attr.val
+          else attrs.class = [attr.val]
+        else attrs[name] = attr
+
+      classes = attrs.class
+
+    if dynamic
+      if attrs
+        @pushln '_R:attrs({'
+        @indent()
+
+        if classes then attrs.class =
+          val: lua_list classes, @tab
+
+        for name, {val, mustEscape} of attrs
+          val = "escape(#{val})" if mustEscape and escapable name, val
+          @pushln "['#{name}'] = #{val},"
+
+        @dedent()
+        @push @tab + '}'
+      else
+        @push @tab + '_R:attrs(nil'
 
       blocks = node.attributeBlocks
       if blocks[0]
-        blocks = blocks.map (block) =>
-          block.val.replace newlineRE, '\n' + @tab
-        @dedent()
-        @pushln "}, #{blocks.join ', '})"
-      else
-        @dedent()
-        @pushln '})'
+        @push ', ' + blocks.map(indent_lines, this).join ', '
+
+      @push ')\n'
       return
 
-    for attr in node.attrs
-      {name, val} = attr
-      name = name.toLowerCase()
-      if attr.mustEscape and not noEscapeRE.test name
+    # Merge 'class' strings into one string.
+    if classes then attrs.class =
+      val: '"' + classes.join(' ').replace(/["']/g, '') + '"'
+
+    for name, {val, mustEscape} of attrs
+      if mustEscape and escapable name, val
         val = "\"#{escape_html val.slice 1, -1}\""
-      @push " #{name}=#{val}"
-    return
-
-    # for attr in node.attrs
-    #   attr.name
-    #   repr(attr.val)
-    #   attr.mustEscape
-
-    # for block in node.attributeBlocks
-    #
-
+      if boolRE.test val
+        @push ' ' + name if Boolean val
+      else @push " #{name}=#{val}"
     return
 
   Code: (node) ->
@@ -298,3 +310,13 @@ has_dynamic_attrs = (node) ->
     return true if !stringRE.test attr.val
   return false
 
+lua_list = (arr, tab) ->
+  if arr.length > 1
+  then "{\n  #{tab + arr.join ',\n  ' + tab}\n#{tab}}"
+  else arr[0]
+
+indent_lines = (node) ->
+  node.val.replace newlineRE, '\n' + @tab
+
+escapable = (name, val) ->
+  !noEscapeRE.test(name) and !boolRE.test(val)
