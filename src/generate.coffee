@@ -33,8 +33,9 @@ generators =
       return
 
   Text: (node) ->
-    @pushln '_R:push("' + repr(node.val) + '")'
-    return
+    if node.val
+      @pushln '_R:push("' + repr(node.val) + '")'
+      return
 
   # TODO: Check if all attributes are static.
   # TODO: Check if all child nodes are static.
