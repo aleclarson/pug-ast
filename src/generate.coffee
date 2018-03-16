@@ -1,5 +1,8 @@
 escape_html = require 'escape-html'
 
+# TODO: Combine adjacent code blocks
+# TODO: Combine adjacent text blocks
+
 # Generate a render function and associated mixin functions.
 # Returns a JSON string shaped like {render, mixins}
 generate = (ast) ->
@@ -295,79 +298,3 @@ has_dynamic_attrs = (node) ->
     return true if !stringRE.test attr.val
   return false
 
-# -- TODO: Dont create a new scope unless new variables are declared
-# -- TODO: Try to inline code blocks safely
-# -- TODO: Combine adjacent code blocks
-# -- TODO: Combine adjacent text blocks
-# -- TODO: Check if tag has all static descendants
-#
-#   -- Compile an AST into a render function.
-#   compile: (ast) =>
-#     @len = 1
-#     @lua = {'return function(res, env, _G)\n'}
-#     @funcs = {} -- func id => func
-#     @mixins = {} -- mixin name => func
-#
-#     -- Process the AST.
-#     for node in *ast.nodes
-#       compile_node self, node
-#
-#     -- End the render function.
-#     @push 'end'
-#
-#     -- Allocate the render function.
-#     render = loadstring(concat @lua, '')!
-#     setfenv render, runtime
-#
-#     -- Cache any render options.
-#     {:funcs, :mixins, :globals, :resolve} = self
-#
-#     -- Release heavy data structures.
-#     @mixins = nil
-#     @funcs = nil
-#     @lua = nil
-#
-#     return (opts = {}) ->
-#
-#       -- Include compiler globals in each render.
-#       if type(globals) == 'table'
-#         if type(opts.globals) ~= 'table'
-#           opts.globals = globals
-#         else
-#           mt = getmetatable opts.globals
-#           if mt == nil
-#             setmetatable opts.globals, __index: globals
-#           elseif mt.__index == nil
-#             mt.__index = globals
-#           else
-#             get = mt.__index
-#             mt.__index = (k) =>
-#               v = get k
-#               v = globals[k] if v == nil
-#               v
-#
-#       -- Use the compiler's resolver if none exists.
-#       if resolve and not opts.resolve
-#         opts.resolve = resolve
-#
-#       res = PugResult opts
-#       res.funcs = funcs
-#       res.mixins = mixins
-#
-#       render res, res.env, res.globals
-#       concat res.html, ''
-#
-# ----------------------------------------
-#
-# -- Returns all text nodes combined, if only text nodes exist.
-# just_text = (nodes) ->
-#   i = 0
-#   text = {}
-#   for node in *nodes
-#     if node.type == 'Text'
-#       i += 1
-#       text[i] = node.val
-#     else return
-#   return concat text, ''
-
-# return PugCompiler
