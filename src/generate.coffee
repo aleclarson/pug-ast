@@ -26,10 +26,11 @@ generate = (ast) ->
 
 module.exports = generate
 
-# `class` and `style` are never escaped.
-noEscapeRE = /^(?:class|style)$/
+rawAttrRE = /^(?:class|style)$/
 newlineRE = /\n/g
 dquoteRE = /"/g
+stringRE = /^['"]/
+falsyRE = /^(?:nil|false)$/
 boolRE = /^(?:true|false)$/
 
 generators =
@@ -107,53 +108,44 @@ generators =
   Attributes: (node, dynamic) ->
 
     if node.attrs[0]
-      attrs = {}
-
-      # Merge 'class' attributes into an array.
-      for attr in node.attrs
-        name = attr.name.toLowerCase()
-        if name is 'class'
-          if attrs.class
-          then attrs.class.push attr.val
-          else attrs.class = [attr.val]
-        else attrs[name] = attr
-
+      attrs = attr_map node.attrs
       classes = attrs.class
 
     if dynamic
       if attrs
-        @pushln '_R:attrs({'
-        @indent()
-
         if classes then attrs.class =
           val: lua_list classes, @tab
-
-        for name, {val, mustEscape} of attrs
-          val = "escape(#{val})" if mustEscape and escapable name, val
-          @pushln "['#{name}'] = #{val},"
-
-        @dedent()
-        @push @tab + '}'
-      else
-        @push @tab + '_R:attrs(nil'
+        attrs = @indent_lines lua_attrs attrs
+      else attrs = 'nil'
+      @push @tab + '_R:attrs(' + attrs
 
       blocks = node.attributeBlocks
       if blocks[0]
-        @push ', ' + blocks.map(indent_lines, this).join ', '
+        @push ', ' + blocks.map(
+          (block) => @indent_lines block.val
+        ).join ', '
 
       @push ')\n'
       return
 
     # Merge 'class' strings into one string.
     if classes then attrs.class =
-      val: '"' + classes.join(' ').replace(/["']/g, '') + '"'
+      val: classes.join(' ').replace /["']/g, ''
 
     for name, {val, mustEscape} of attrs
-      if mustEscape and escapable name, val
-        val = "\"#{escape_html val.slice 1, -1}\""
-      if boolRE.test val
-        @push ' ' + name if Boolean val
-      else @push " #{name}=#{val}"
+      continue if falsyRE.test val
+
+      if (val is true) or (val is 'true')
+        @push ' ' + name
+        continue
+
+      if stringRE.test val
+        val = val.slice 1, -1
+        if mustEscape and !rawAttrRE.test name
+          val = escape_html val
+        val = val.replace dquoteRE, '\\"'
+
+      @push " #{name}=#{repr quote val}"
     return
 
   Code: (node) ->
@@ -310,13 +302,44 @@ find_child = (nodes, test) ->
 
 pluck_val = (node) -> node.val
 
-stringRE = /^['"]/
-
 has_dynamic_attrs = (node) ->
   return true if node.attributeBlocks[0]
   for attr in node.attrs
     return true if !stringRE.test attr.val
   return false
+
+attr_map = (attrs) ->
+  map = {}
+  for attr in attrs
+    name = attr.name.toLowerCase()
+    # Merge 'class' attributes into an array.
+    if name is 'class'
+      if map.class
+      then map.class.push attr.val
+      else map.class = [attr.val]
+    else map[name] = attr
+  return map
+
+lua_attrs = (attrs) ->
+  lines = ['{']
+  for name, {val, mustEscape} of attrs
+
+    # Boolean/nil values are left as-is.
+    if !boolRE.test(val) and (val isnt 'nil')
+
+      if stringRE.test val
+        val = val.slice 1, -1
+        if mustEscape and !rawAttrRE.test name
+          val = escape_html val
+        val = quote repr val
+
+      else unless rawAttrRE.test name
+        tostring = if mustEscape then 'escape' else 'tostring'
+        val = tostring + "(#{val})"
+
+    lines.push "  ['#{name}'] = #{val},"
+  lines.push '}'
+  lines.join '\n'
 
 lua_list = (arr, tab) ->
   if arr.length > 1
@@ -326,8 +349,7 @@ lua_list = (arr, tab) ->
 indent_lines = (node) ->
   node.val.replace newlineRE, '\n' + @tab
 
-escapable = (name, val) ->
-  !noEscapeRE.test(name) and !boolRE.test(val)
+quote = (str) -> '"' + str + '"'
 
 declare_mixins = ->
   mixins = Object.keys @mixins
