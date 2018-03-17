@@ -204,7 +204,8 @@ generators =
   Each: (node) ->
     {obj} = node
     unless obj.startsWith 'ipairs('
-      obj = "__each(#{obj})"
+      iter = if node.key then '__each' else '__vals'
+      obj = iter + "(#{obj})"
 
     args = node.key
     if args then args += ', ' + node.val
