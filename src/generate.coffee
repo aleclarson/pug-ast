@@ -166,6 +166,7 @@ generators =
       unless node.test
         @pushln 'else'
         generators.Block.call this, node
+        break
 
     @pushln 'end'
     return
