@@ -304,6 +304,9 @@ class PugBlock
     @tab = @tab.slice 0, -2
     return
 
+  indent_lines: (str) ->
+    str.replace newlineRE, '\n' + @tab
+
 #
 # Helpers
 #
@@ -368,9 +371,6 @@ lua_list = (arr, tab) ->
   if arr.length > 1
   then "{\n  #{tab + arr.join ',\n  ' + tab}\n#{tab}}"
   else arr[0]
-
-indent_lines = (node) ->
-  node.val.replace newlineRE, '\n' + @tab
 
 quote = (str) -> '"' + str + '"'
 
