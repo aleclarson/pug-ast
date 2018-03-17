@@ -328,10 +328,13 @@ find_child = (nodes, test) ->
 
 pluck_val = (node) -> node.val
 
+is_dynamic_attr = (val) ->
+  !stringRE.test(val) and !boolRE.test(val) and (val isnt 'nil')
+
 has_dynamic_attrs = (node) ->
   return true if node.attributeBlocks[0]
   for attr in node.attrs
-    return true if !stringRE.test attr.val
+    return true if is_dynamic_attr attr.val
   return false
 
 attr_map = (attrs) ->
