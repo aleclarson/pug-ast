@@ -1,4 +1,4 @@
-# pug2lua v0.0.1
+# pug2lua v0.1.0
 
 Generate Lua functions from Pug templates.
 
@@ -15,10 +15,8 @@ pug.transpile(ast, (code, node) => {
   // Return the transpiled code.
 })
 
-// Generate Lua code and return a JSON string.
-let json = pug.lua(ast)
-
-JSON.parse(json) // => { render: String, mixins: {String => String} }
+// Generate a string of Lua code.
+let lua = pug.lua(ast)
 ```
 
 ### Built-in transpilers
