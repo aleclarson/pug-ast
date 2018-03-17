@@ -3,8 +3,7 @@ escape_html = require 'escape-html'
 # TODO: Combine adjacent code blocks
 # TODO: Combine adjacent text blocks
 
-# Generate a render function and associated mixin functions.
-# Returns a JSON string shaped like {render, mixins}
+# Generate a Lua string that returns {render, mixins}
 generate = (ast) ->
   tpl = new PugBlock
   tpl.lua = ['local render = function(_R, _E, _G)\n']
@@ -50,8 +49,6 @@ generators =
       @pushln '_R:push("' + repr(node.val) + '")'
       return
 
-  # TODO: Check if all attributes are static.
-  # TODO: Check if all child nodes are static.
   # TODO: Only call `push_env` if variables are declared by children
   Tag: (node) ->
     # Track if the tag has dynamic attributes/content.
@@ -170,9 +167,6 @@ generators =
 
     @pushln 'end'
     return
-
-    # TODO: Check if test:sub(1, 1) == '!'
-    # test, consequent, alternate
 
   Case: (node) ->
     {nodes} = node.block
