@@ -81,8 +81,8 @@ generators =
       if dynamic
         @push '>")\n'
 
-        # Push a new scope if a child has code.
-        has_scope = find_child(block.nodes, has_code)?
+        # Push a new scope if a child has unbuffered code.
+        has_scope = find_child(block.nodes, has_unbuffered_code)?
 
         @pushln 'do'
         generators.Block.call this, block, has_scope
@@ -247,8 +247,8 @@ generators =
         ')\n'
       ]
 
-      # Push a new scope if a child has code.
-      has_scope = find_child(node.block.nodes, has_code)?
+      # Push a new scope if a child has unbuffered code.
+      has_scope = find_child(node.block.nodes, has_unbuffered_code)?
 
       generators.Block.call mixin, node.block, has_scope
       mixin.push 'end,'
@@ -298,8 +298,8 @@ repr = (str) ->
   str.replace newlineRE, '\\n'
      .replace dquoteRE, '\\"'
 
-has_code = (node) ->
-  node.type is "Code"
+has_unbuffered_code = (node) ->
+  node.type is 'Code' and !node.buffer
 
 has_non_text = (node) ->
   node.type isnt 'Text'
