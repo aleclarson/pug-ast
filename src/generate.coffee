@@ -272,11 +272,18 @@ generators =
   InterpolatedTag: (node) ->
     generators.Tag.call this, node
 
+  Comment: (node) ->
+    if node.buffer
+      @pushln "_R:push(\"<!--#{repr format_comment node, @tab}-->\\n\")"
+      return
+
   Extends: (node) ->
     throw Error "`extends` is not supported yet"
 
   Doctype: (node) ->
     throw Error "`doctype` is not supported yet"
+
+generators.BlockComment = generators.Comment
 
 class PugBlock
   constructor: ->
@@ -368,6 +375,19 @@ indent_lines = (node) ->
   node.val.replace newlineRE, '\n' + @tab
 
 quote = (str) -> '"' + str + '"'
+
+join_text = (nodes) ->
+  text = []
+  for node in nodes
+    if node.type is 'Text'
+      text.push node.val
+    else break
+  text.join ''
+
+format_comment = (node, tab) ->
+  comment = node.val
+  comment += '\n' + join_text node.block.nodes if node.block
+  comment.trim().replace newlineRE, '\n  ' + tab
 
 declare_mixins = ->
   mixins = Object.keys @mixins
