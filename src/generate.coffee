@@ -159,7 +159,7 @@ generators =
   Conditional: (node) ->
     i = -1
     loop
-      @pushln "#{if ++i then 'elseif' else 'if'} #{node.test} then\n"
+      @pushln "#{if ++i then 'elseif' else 'if'} #{node.test} then"
       generators.Block.call this, node.consequent
 
       break unless node = node.alternate
