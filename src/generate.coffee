@@ -207,9 +207,9 @@ generators =
       iter = if node.key then '__each' else '__vals'
       obj = iter + '(' + @indent_lines(obj) + ')'
 
-    args = node.key
-    if args then args += ', ' + node.val
-    else args = node.val
+    args = node.val
+    if node.key
+      args += ', ' + node.key
 
     @pushln "for #{args} in #{obj} do"
     generators.Block.call this, node.block
