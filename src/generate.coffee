@@ -153,7 +153,7 @@ generators =
       tostring = if node.mustEscape then 'escape' else 'tostring'
       @pushln "_R:push(#{tostring}(#{node.val}))"
     else
-      @push @tab + node.val.replace newlineRE, '\n' + @tab
+      @pushln node.val.replace newlineRE, '\n' + @tab
     return
 
   Conditional: (node) ->
