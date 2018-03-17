@@ -184,19 +184,19 @@ generators =
     expr = []
     for node in nodes
 
-      if case_node.expr is 'default'
+      if node.expr is 'default'
         @pushln 'else'
-        generators.Block.call this, case_node.block
+        generators.Block.call this, node.block
         break
 
-      expr.push case_node.expr + ' == __expr'
-      if case_node.block
+      expr.push node.expr + ' == __expr'
+      if node.block
         keyword = if ++i then 'elseif ' else 'if '
         if expr.length > 1
         then @pushln keyword + '(' + expr.join(') or (') + ') then'
         else @pushln keyword + expr[0] + ' then'
         expr.length = 0
-        generators.Block.call this, case_node.block
+        generators.Block.call this, node.block
 
     @pushln 'end'
     return
