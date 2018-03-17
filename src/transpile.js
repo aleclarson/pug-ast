@@ -38,7 +38,7 @@ module.exports = function transpile(ast, opts) {
       case 'Mixin':
         if (node.call) {
           return Promise.all([
-            transpileProp(node, 'args'),
+            node.args && transpileProp(node, 'args'),
             transpileProp(node.attrs, 'val'),
             transpileProp(node.attributeBlocks, 'val'),
           ])
