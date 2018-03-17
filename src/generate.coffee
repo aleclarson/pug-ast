@@ -269,9 +269,6 @@ generators =
   RawInclude: (node) ->
     @pushln '_R:include("' + node.file.path + '")'
 
-  InterpolatedTag: (node) ->
-    generators.Tag.call this, node
-
   Comment: (node) ->
     if node.buffer
       @pushln "_R:push(\"<!--#{repr format_comment node, @tab}-->\\n\")"
@@ -284,6 +281,7 @@ generators =
     throw Error "`doctype` is not supported yet"
 
 generators.BlockComment = generators.Comment
+generators.InterpolatedTag = generators.Tag
 
 class PugBlock
   constructor: ->
