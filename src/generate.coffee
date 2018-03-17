@@ -225,12 +225,28 @@ generators =
   Mixin: (node) ->
 
     if node.call
+
       unless @mixins[node.name]
         # TODO: Include code snippet and location.
         throw Error "Cannot call undeclared mixin: '#{node.name}'"
-      # TODO: args, attrs, attributeBlocks
-      attrs = node.attributeBlocks.map(pluck_val).join ', '
-      @pushln "_R:mixin('#{node.name}', {#{node.args}}, #{attrs or 'nil'})"
+
+      args = node.attributeBlocks
+        .map (block) => @indent_lines block.val
+
+      if node.attrs[0]
+        attrs = attr_map node.attrs
+        if classes = attrs.class
+          attrs.class = val: lua_list classes, @tab
+        args.unshift @indent_lines lua_attrs attrs
+
+      else if args.length
+        args.unshift 'nil'
+
+      if node.args
+        args.unshift '{' + @indent_lines(node.args) + '}'
+
+      args.unshift quote node.name
+      @pushln "_R:mixin(#{args.join ', '})"
 
     else
       mixin = new PugBlock
