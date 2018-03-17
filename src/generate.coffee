@@ -7,14 +7,22 @@ escape_html = require 'escape-html'
 # Returns a JSON string shaped like {render, mixins}
 generate = (ast) ->
   tpl = new PugBlock
-  tpl.lua = ['return function(_R, _E, _G)\n']
+  tpl.lua = ['local render = function(_R, _E, _G)\n']
   tpl.mixins = {} # mixin name => mixin code
 
   generators.Block.call tpl, ast
   tpl.pushln 'end'
 
-  render: tpl.lua.join ''
-  mixins: tpl.mixins
+  # Declare the local `mixins` table.
+  has_mixins = declare_mixins.call tpl
+
+  # Export the `render` function and `mixins` table.
+  tpl.push tpl.tab + 'return {render = render'
+  tpl.push ', mixins = mixins' if has_mixins
+  tpl.push '}'
+
+  # All done!
+  tpl.lua.join ''
 
 module.exports = generate
 
@@ -234,7 +242,7 @@ generators =
       mixin = new PugBlock
       mixin.mixins = @mixins
       mixin.lua = [
-        'return function(attributes'
+        'function(attributes'
         if node.args then ', ' + node.args
         ')\n'
       ]
@@ -243,7 +251,7 @@ generators =
       has_scope = find_child(node.block.nodes, has_code)?
 
       generators.Block.call mixin, node.block, has_scope
-      mixin.push 'end'
+      mixin.push 'end,'
 
       @mixins[node.name] = mixin.lua.join ''
       return
@@ -320,3 +328,14 @@ indent_lines = (node) ->
 
 escapable = (name, val) ->
   !noEscapeRE.test(name) and !boolRE.test(val)
+
+declare_mixins = ->
+  mixins = Object.keys @mixins
+  if mixins.length
+    @pushln 'local mixins = {'
+    @indent()
+    for name in mixins
+      @pushln "['#{name}'] = " + @indent_lines @mixins[name]
+    @dedent()
+    @pushln '}'
+    return true
