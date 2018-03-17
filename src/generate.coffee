@@ -205,7 +205,7 @@ generators =
     {obj} = node
     unless obj.startsWith 'ipairs('
       iter = if node.key then '__each' else '__vals'
-      obj = iter + "(#{obj})"
+      obj = iter + '(' + @indent_lines(obj) + ')'
 
     args = node.key
     if args then args += ', ' + node.val
