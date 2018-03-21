@@ -16,9 +16,8 @@ generate = (ast) ->
   has_mixins = declare_mixins.call tpl
 
   # Export the `render` function and `mixins` table.
-  tpl.push tpl.tab + 'return {render = render'
-  tpl.push ', mixins = mixins' if has_mixins
-  tpl.push '}'
+  tpl.push tpl.tab + 'return render'
+  tpl.push ', mixins' if has_mixins
 
   # All done!
   tpl.lua.join ''
