@@ -231,7 +231,7 @@ generators =
         attrs = attr_map node.attrs
         if classes = attrs.class
           attrs.class = val: lua_list classes, @tab
-        args.unshift @indent_lines lua_attrs attrs
+        args.unshift @indent_lines lua_attrs attrs, false
       else args.unshift '{}'
 
       if node.args
@@ -341,9 +341,10 @@ attr_map = (attrs) ->
     else map[name] = attr
   return map
 
-lua_attrs = (attrs) ->
+lua_attrs = (attrs, escaped = true) ->
   lines = ['{']
   for name, {val, mustEscape} of attrs
+    mustEscape = false unless escaped
 
     # Boolean/nil values are left as-is.
     if !boolRE.test(val) and (val isnt 'nil')
