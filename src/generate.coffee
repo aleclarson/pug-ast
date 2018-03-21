@@ -386,7 +386,7 @@ join_text = (nodes) ->
 format_comment = (node, tab) ->
   comment = node.val
   comment += '\n' + join_text node.block.nodes if node.block
-  comment.trim().replace newlineRE, '\n  ' + tab
+  comment.trim().replace newlineRE, '\n' + tab
 
 declare_mixins = ->
   mixins = Object.keys @mixins
