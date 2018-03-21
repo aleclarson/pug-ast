@@ -6,7 +6,7 @@ escape_html = require 'escape-html'
 # Generate a Lua string that returns {render, mixins}
 generate = (ast) ->
   tpl = new PugBlock
-  tpl.lua = ['local render = function(_R, _E, _G)\n']
+  tpl.lua = ['local render = function()\n']
   tpl.mixins = {} # mixin name => mixin code
 
   generators.Block.call tpl, ast
