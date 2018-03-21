@@ -37,10 +37,10 @@ generators =
   Block: ({ nodes }, has_scope) ->
     if nodes.length
       @indent()
-      @pushln '_R:push_env()\n' if has_scope
+      @pushln '_R:enter()' if has_scope
       for node in nodes
         generators[node.type].call this, node
-      @push '\n' + @tab + '_R:pop_env()\n' if has_scope
+      @pushln '_R:leave()' if has_scope
       @dedent()
       return
 
@@ -49,7 +49,7 @@ generators =
       @pushln '_R:push("' + repr(node.val) + '")'
       return
 
-  # TODO: Only call `push_env` if variables are declared by children
+  # TODO: Only call `_R:enter` if variables are declared by children
   Tag: (node) ->
     # Track if the tag has dynamic attributes/content.
     dynamic = has_dynamic_attrs node
