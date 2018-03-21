@@ -147,7 +147,7 @@ generators =
 
   Code: (node) ->
     if node.buffer
-      tostring = if node.mustEscape then 'escape' else 'tostring'
+      tostring = if node.mustEscape then '__escape' else '__string'
       @pushln "_R:push(#{tostring}(#{node.val}))"
     else
       @pushln node.val.replace newlineRE, '\n' + @tab
@@ -357,7 +357,7 @@ lua_attrs = (attrs) ->
         val = quote repr val
 
       else unless rawAttrRE.test name
-        tostring = if mustEscape then 'escape' else 'tostring'
+        tostring = if mustEscape then '__escape' else '__string'
         val = tostring + "(#{val})"
 
     lines.push "  ['#{name}'] = #{val},"
