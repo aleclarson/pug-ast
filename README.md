@@ -76,5 +76,5 @@ unless the attribute value is simply a string or variable reference.
 
 - `extends`
 - `block/append/prepend`
-- `doctype`
+- `doctype` (except `doctype html`)
 - `...` rest arguments for mixins
