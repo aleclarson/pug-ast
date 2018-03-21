@@ -154,9 +154,9 @@ generators =
     return
 
   Conditional: (node) ->
-    i = -1
+    i = 0
     loop
-      @pushln "#{if ++i then 'elseif' else 'if'} #{node.test} then"
+      @pushln "#{if i++ then 'elseif' else 'if'} #{node.test} then"
       generators.Block.call this, node.consequent
 
       break unless node = node.alternate
@@ -174,7 +174,7 @@ generators =
     # Evaluate the expression once.
     @pushln 'local __expr = ' + node.expr
 
-    i = -1
+    i = 0
     expr = []
     for node in nodes
 
@@ -185,7 +185,7 @@ generators =
 
       expr.push node.expr + ' == __expr'
       if node.block
-        keyword = if ++i then 'elseif ' else 'if '
+        keyword = if i++ then 'elseif ' else 'if '
         if expr.length > 1
         then @pushln keyword + '(' + expr.join(') or (') + ') then'
         else @pushln keyword + expr[0] + ' then'
@@ -260,6 +260,7 @@ generators =
 
   RawInclude: (node) ->
     @pushln '_R:include("' + node.file.path + '")'
+    return
 
   Comment: (node) ->
     if node.buffer
