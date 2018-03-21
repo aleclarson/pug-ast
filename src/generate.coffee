@@ -270,7 +270,12 @@ generators =
     throw Error "`extends` is not supported yet"
 
   Doctype: (node) ->
-    throw Error "`doctype` is not supported yet"
+
+    if node.val isnt 'html'
+      throw Error "`doctype #{node.val}` is not supported yet"
+
+    @pushln '_R:push("<!DOCTYPE html>\\n")'
+    return
 
 generators.BlockComment = generators.Comment
 generators.InterpolatedTag = generators.Tag
