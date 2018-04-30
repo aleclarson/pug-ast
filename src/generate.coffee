@@ -1,4 +1,5 @@
 escape_html = require 'escape-html'
+path = require 'path'
 
 # TODO: Combine adjacent text blocks
 
@@ -268,8 +269,18 @@ generators =
       @mixins[node.name] = mixin.lua.join ''
       return
 
-  RawInclude: (node) ->
+  # TODO: Support filters
+  Include: (node) ->
     @pushln '_R:include("' + node.file.path + '")'
+    return
+
+  # Used for non-pug file paths.
+  RawInclude: (node) ->
+    file = node.file.path
+    if path.extname file
+    then method = 'rawinclude'
+    else file += '.pug'
+    @pushln '_R:' + (method or 'include') + '("' + file + '")'
     return
 
   Comment: (node) ->
