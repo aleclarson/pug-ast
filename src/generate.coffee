@@ -5,7 +5,7 @@ path = require 'path'
 
 TAB = '  '
 
-# Generate a Lua string that returns (render, mixins)
+# Generate a Lua string that returns {render, mixins}
 generate = (ast) ->
   tpl = new PugScript
   tpl.lua = ['local render = function()\n']
@@ -22,12 +22,14 @@ generate = (ast) ->
   # Declare the local `mixins` table.
   has_mixins = declare_mixins.call tpl
 
+  # Just a blank slate!
+  unless has_render or has_mixins
+    return 'return {}'
+
   # Export the `render` function and `mixins` table.
-  if has_render
-    tpl.push 'return render'
-    tpl.push ', mixins' if has_mixins
-  else if has_mixins
-    tpl.push 'return nil, mixins'
+  tpl.push 'return {' +
+    (has_render and 'render' or 'nil') +
+    (has_mixins and ', mixins}' or '}')
 
   # All done!
   tpl.lua.join ''
