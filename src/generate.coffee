@@ -8,15 +8,23 @@ generate = (ast) ->
   tpl.lua = ['local render = function()\n']
   tpl.mixins = {} # mixin name => mixin code
 
+  # Fill the render function.
   generators.Block.call tpl, ast
-  tpl.pushln 'end'
+
+  # Avoid creating an empty render function.
+  if has_render = tpl.lua.length > 1
+  then tpl.pushln 'end'
+  else tpl.lua = []
 
   # Declare the local `mixins` table.
   has_mixins = declare_mixins.call tpl
 
   # Export the `render` function and `mixins` table.
-  tpl.push tpl.tab + 'return render'
-  tpl.push ', mixins' if has_mixins
+  if has_render
+    tpl.push tpl.tab + 'return render'
+    tpl.push ', mixins' if has_mixins
+  else if has_mixins
+    tpl.push tpl.tab + 'return nil, mixins'
 
   # All done!
   tpl.lua.join ''
