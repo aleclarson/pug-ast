@@ -4,7 +4,7 @@ escape_html = require 'escape-html'
 
 # Generate a Lua string that returns {render, mixins}
 generate = (ast) ->
-  tpl = new PugBlock
+  tpl = new PugScript
   tpl.lua = ['local render = function()\n']
   tpl.mixins = {} # mixin name => mixin code
 
@@ -239,7 +239,7 @@ generators =
       @pushln "_R:mixin(#{args.join ', '})"
 
     else
-      mixin = new PugBlock
+      mixin = new PugScript
       mixin.mixins = @mixins
       mixin.lua = [
         'function(attributes'
@@ -279,7 +279,7 @@ generators =
 generators.BlockComment = generators.Comment
 generators.InterpolatedTag = generators.Tag
 
-class PugBlock
+class PugScript
   constructor: ->
     @tab = ''
     return
