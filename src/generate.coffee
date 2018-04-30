@@ -24,10 +24,10 @@ generate = (ast) ->
 
   # Export the `render` function and `mixins` table.
   if has_render
-    tpl.push TAB + 'return render'
+    tpl.push 'return render'
     tpl.push ', mixins' if has_mixins
   else if has_mixins
-    tpl.push TAB + 'return nil, mixins'
+    tpl.push 'return nil, mixins'
 
   # All done!
   tpl.lua.join ''
