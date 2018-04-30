@@ -38,7 +38,7 @@ pug2lua -s --moon
 
 ### Code generation
 
-The `pug.lua` function generates a JSON string shaped like `{render, mixins}`.
+The `pug.lua` function generates a Lua function that returns a tuple like `(render, mixins)`.
 
 The `_G` variable is *not* the actual global environment.
 

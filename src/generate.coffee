@@ -4,7 +4,7 @@ escape_html = require 'escape-html'
 
 TAB = '  '
 
-# Generate a Lua string that returns {render, mixins}
+# Generate a Lua string that returns (render, mixins)
 generate = (ast) ->
   tpl = new PugScript
   tpl.lua = ['local render = function()\n']
