@@ -1,6 +1,5 @@
 escape_html = require 'escape-html'
 
-# TODO: Combine adjacent code blocks
 # TODO: Combine adjacent text blocks
 
 # Generate a Lua string that returns {render, mixins}
