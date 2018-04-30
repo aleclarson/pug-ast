@@ -2,6 +2,8 @@ escape_html = require 'escape-html'
 
 # TODO: Combine adjacent text blocks
 
+TAB = '  '
+
 # Generate a Lua string that returns {render, mixins}
 generate = (ast) ->
   tpl = new PugScript
@@ -21,10 +23,10 @@ generate = (ast) ->
 
   # Export the `render` function and `mixins` table.
   if has_render
-    tpl.push tpl.tab + 'return render'
+    tpl.push TAB + 'return render'
     tpl.push ', mixins' if has_mixins
   else if has_mixins
-    tpl.push tpl.tab + 'return nil, mixins'
+    tpl.push TAB + 'return nil, mixins'
 
   # All done!
   tpl.lua.join ''
@@ -301,7 +303,7 @@ class PugScript
     return
 
   indent: ->
-    @tab += '  '
+    @tab += TAB
     return
 
   dedent: ->
