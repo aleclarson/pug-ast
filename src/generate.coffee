@@ -47,7 +47,9 @@ generators =
       @indent()
       @pushln '_R:enter()' if has_scope
       for node in nodes
-        generators[node.type].call this, node
+        if gen = generators[node.type]
+        then gen.call this, node
+        else console.warn 'Unsupported node type: ' + node.type
       @pushln '_R:leave()' if has_scope
       @dedent()
       return
