@@ -232,11 +232,6 @@ generators =
   Mixin: (node) ->
 
     if node.call
-
-      unless @mixins[node.name]
-        # TODO: Include code snippet and location.
-        throw Error "Cannot call undeclared mixin: '#{node.name}'"
-
       args = node.attributeBlocks
         .map (block) => @indent_lines block.val
 
