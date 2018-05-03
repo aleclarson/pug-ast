@@ -125,7 +125,7 @@ generators =
       @push @tab + '_R:attrs('
       if attrs
         if classes then attrs.class =
-          val: lua_list classes, @tab
+          val: lua_list classes, TAB
         @push @indent_lines lua_attrs attrs
 
       blocks = node.attributeBlocks
@@ -243,7 +243,7 @@ generators =
       if node.attrs[0]
         attrs = attr_map node.attrs
         if classes = attrs.class
-          attrs.class = val: lua_list classes, @tab
+          attrs.class = val: lua_list classes, TAB
         args.unshift @indent_lines lua_attrs attrs, false
       else args.unshift '{}'
 
