@@ -71,7 +71,7 @@ generators =
       @push @tab + '_R:push("<' + node.name
       @push '")\n' if dynamic
     else
-      @pushln "local __tag = tostring(#{node.expr})"
+      @pushln "local __tag = __str(#{node.expr})"
       @pushln '_R:push("<")'
       @pushln '_R:push(__tag)'
 
@@ -160,7 +160,7 @@ generators =
 
   Code: (node) ->
     if node.buffer
-      tostring = if node.mustEscape then '__escape' else '__string'
+      tostring = if node.mustEscape then '__esc' else '__str'
       @pushln "_R:push(#{tostring}(#{node.val}))"
     else
       @pushln node.val.replace newlineRE, '\n' + @tab
@@ -385,7 +385,7 @@ lua_attrs = (attrs, escaped = true) ->
         val = quote repr val
 
       else unless rawAttrRE.test name
-        tostring = if mustEscape then '__escape' else '__string'
+        tostring = if mustEscape then '__esca' else '__attr'
         val = tostring + "(#{val})"
 
     lines.push "  ['#{name}'] = #{val},"
