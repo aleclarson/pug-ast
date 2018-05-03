@@ -79,3 +79,4 @@ unless the attribute value is simply a string or variable reference.
 - `doctype` (except `doctype html`)
 - `include` filters
 - `...` rest arguments for mixins
+- emoji literals
