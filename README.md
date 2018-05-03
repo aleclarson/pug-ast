@@ -1,4 +1,4 @@
-# pug2lua v0.2.0
+# pug2lua v0.3.0
 
 Generate Lua functions from Pug templates.
 
