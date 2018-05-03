@@ -122,16 +122,16 @@ generators =
       classes = attrs.class
 
     if dynamic
+      @push @tab + '_R:attrs('
       if attrs
         if classes then attrs.class =
           val: lua_list classes, @tab
-        attrs = @indent_lines lua_attrs attrs
-      else attrs = 'nil'
-      @push @tab + '_R:attrs(' + attrs
+        @push @indent_lines lua_attrs attrs
 
       blocks = node.attributeBlocks
       if blocks[0]
-        @push ', ' + blocks.map(
+        @push ', ' if attrs
+        @push blocks.map(
           (block) => @indent_lines block.val
         ).join ', '
 
