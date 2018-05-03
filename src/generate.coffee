@@ -240,7 +240,6 @@ generators =
         if classes = attrs.class
           attrs.class = val: lua_list classes, TAB
         args.unshift @indent_lines lua_attrs attrs, false
-      else args.unshift '{}'
 
       if node.args
         args.unshift '{' + @indent_lines(node.args) + '}'
