@@ -267,16 +267,15 @@ generators =
 
   # TODO: Support filters
   Include: (node) ->
-    @pushln '_R:include("' + node.file.path + '")'
+    file = node.file.path.replace /\.pug$/, ''
+    @pushln '_R:include("' + file + '")'
     return
 
   # Used for non-pug file paths.
   RawInclude: (node) ->
     file = node.file.path
-    if path.extname file
-    then method = 'rawinclude'
-    else file += '.pug'
-    @pushln '_R:' + (method or 'include') + '("' + file + '")'
+    method = path.extname(file) and 'rawinclude' or 'include'
+    @pushln '_R:' + method + '("' + file + '")'
     return
 
   Comment: (node) ->
